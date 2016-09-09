@@ -76,7 +76,7 @@ This item neads to be cleaned first, i. e. we should first get an overview of ho
 
 ```{r}
 
-freq_overview(item.dirty, range = c(1, 5))
+freq_overview(item.dirty)
 
 ```
 
@@ -162,7 +162,7 @@ consensus_df(data, range = c(-2, 2))
 
 The range argument is nearly part of all functions, since it indicates which are the valid vlaues in any given item. The range is entered as a vector and has only two arguments (though, if you pass on more than that, the `min` and `max` values will be taken).
 
-If you every have trouble using this argument, recode your data properly before computing the consensus and set `range = NULL`, which is the default. It will then be guessed from your data frame for each item.
+If you ever have trouble using this argument, recode your data properly before computing the consensus and set `range = NULL`, which is the default. It will then be guessed from your data frame for each item.
 
 
 [^1]: Tastle, W. J., & Wierman, M. J. (2007). Consensus and dissention: A measure of ordinal dispersion. *International Journal of Approximate Reasoning*, *45(3)*, 531–545. http://doi.org/10.1016/j.ijar.2006.06.024.
