@@ -31,7 +31,7 @@ library(consr)
 First, lets consider the example given by Tastle & Wiermann on p. 537, equation 2:
 
 
-```{r}
+```{r, echo = TRUE}
 
 item <- c(rep(1, 19), rep(2, 16), rep(3, 26), rep(4, 29), rep(5, 10))
 
@@ -163,38 +163,6 @@ consensus_df(data, range = c(-2, 2))
 The range argument is nearly part of all functions, since it indicates which are the valid vlaues in any given item. The range is entered as a vector and has only two arguments (though, if you pass on more than that, the `min` and `max` values will be taken).
 
 If you every have trouble using this argument, recode your data properly before computing the consensus and set `range = NULL`, which is the default. It will then be guessed from your data frame for each item.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Also a quote using `>`:
-
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
 
 
 [^1]: Tastle, W. J., & Wierman, M. J. (2007). Consensus and dissention: A measure of ordinal dispersion. *International Journal of Approximate Reasoning*, *45(3)*, 531–545. http://doi.org/10.1016/j.ijar.2006.06.024.
