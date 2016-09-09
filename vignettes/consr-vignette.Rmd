@@ -16,11 +16,11 @@ This package is based on an article by Tastle & Wiermann, (2006)[^1]. It impleme
 
 To install the package, run this code:
 
-```{r}
+```{r, eval = FALSE}
 
-# install.packages("devtools")
-# library(devtools)
-# devtools::install_github("kthorstmann/consr")
+install.packages("devtools")
+library(devtools)
+devtools::install_github("kthorstmann/consr")
 library(consr)
 
 ```
@@ -32,7 +32,7 @@ First, lets consider the example given by Tastle & Wiermann on p. 537, equation 
 
 
 ```{r, echo = TRUE}
-
+library(consr)
 item <- c(rep(1, 19), rep(2, 16), rep(3, 26), rep(4, 29), rep(5, 10))
 
 ```
