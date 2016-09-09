@@ -1,0 +1,18 @@
+---
+title: "consr-package"
+author: "K. T. Horstmann"
+date: "2016"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+Abstract for the package.
+
+Also a quote using `>`:
+
+> "He who gives up [code] safety for [code] speed deserves neither."
+([via](https://twitter.com/hadleywickham/status/504368538874703872))

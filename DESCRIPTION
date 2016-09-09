@@ -1,0 +1,17 @@
+Package: consr
+Type: Package
+Title: Compute Consensus For Likert Scales
+Version: 0.1.0
+Authors@R: person("Kai Tobias", "Horstmann", email = "horstmak@hu-berlin.de", role = c("aut", "cre"))
+Description: This package computes Consensus as defined by the article by Tastle W. J. &
+    Wierman, M. J. (2007). Consensus and dissention: A measure of ordinal dispersion.
+    International Journal of Approximate Reasoning, 45, 531-545. doi:10.1016/j.ijar.
+    2006.06.024.
+License: GPL-3
+URL: https://github.com/kthorstmann/consr
+LazyData: TRUE
+Imports: stringr,
+    purrr
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
