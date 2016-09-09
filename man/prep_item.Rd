@@ -7,7 +7,7 @@
 prep_item(item, range = NULL)
 }
 \arguments{
-\item{item}{The item to be recoded}
+\item{item}{The item to be recoded.}
 
 \item{range}{The range of the Likert-scale for that item. Must be a vector of at least two characters.}
 }

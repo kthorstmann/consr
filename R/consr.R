@@ -1,19 +1,3 @@
-
-
-
-
-
-# sample data --------------------------------------------------------
-
-
-
-
-
-
-
-# functions ----------------------------------------------------------
-
-
 #' Subset integers from data frame
 #'
 #' For computing the consensus, only integers should be included in the data frame.
@@ -48,8 +32,6 @@ integer_subset_df <- function(data){
   return(int_data)
 }
 
-# helper function rbind ----------------------------------------------
-
 #' rbind data frames from lists
 #'
 #' @param list A list where each entry is a data frame with the same columns
@@ -66,7 +48,6 @@ rbind_map <- function(list){
   }
   df
 }
-
 
 ## TESTS:
   # - return correct data frame
@@ -114,7 +95,7 @@ freq_overview <- function(item){
 
 #' Prepare an item for consensus analysis
 #'
-#' @param item The item to be recoded
+#' @param item The item to be recoded.
 #' @param range The range of the Likert-scale for that item. Must be a vector of at least two characters.
 #'
 #' @return The item itself, where all entries outside of \code{range} are recoded as \code{NA}.
@@ -158,8 +139,6 @@ prep_item_df <- function(data, range = NULL){
   prep_df <- as.data.frame(prep_df)
   prep_df
 }
-
-
 
 
 #' Get frequencies in an item and plot them
@@ -308,7 +287,6 @@ consensus <- function(item, range = NULL, consensus.only = FALSE, round = 2){
 #'data <- cbind(subj_id, data, stringsAsFactors = FALSE)
 #'data["var_j"] <- data["var_j"] / 2.3
 #'consensus_df(data, range = c(-2, 2), check.int = TRUE)
-
 consensus_df <- function(data, range = NULL, consensus.only = FALSE,
                          round = 2, check.int = TRUE){
   if (check.int) {
