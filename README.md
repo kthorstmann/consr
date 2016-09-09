@@ -15,3 +15,9 @@ To install the package, run the following code:
     install.packages("devtools")
     library(devtools)
     devtools::install_github("kthorstmann/consr")
+
+------------------------------------------------------------------------
+
+Please cite as:
+
+Horstmann, K. T. (2016). consr: Compute Consensus For Likert Scales. manual. Retrieved from <https://github.com/kthorstmann/consr>
