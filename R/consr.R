@@ -1,40 +1,34 @@
 
 
 
-# functions for the computation of consensus
-# it is based on the following paper doi:10.1016/j.ijar.2006.06.024
-
-
 
 
 # sample data --------------------------------------------------------
 
-# input will be questionnaire data
-# n = 10 # (max = 26 for now)
-# var_names <- paste0("var_", letters[1:10])
-# entries <- matrix(sample(-2:2, n*10, replace = TRUE),
-#                   nrow = n, ncol = 10)
-# entries[sample(1:100, 15)] <- NA
-# data <- as.data.frame(entries)
-# colnames(data) <- var_names
-# subj_id <- paste0("id_", sample(letters, n, replace = FALSE))
-# data <- cbind(subj_id, data, stringsAsFactors = FALSE)
-# data["var_j"] <- data["var_j"] / 2.3
-# str(data)
 
 
 
-# functions overview -------------------------------------------------
 
-# 1 select appropriate data
-# 2 compute consensus for one variable
-# 3 compute consensus for a data frame
 
-# select integers from data ------------------------------------------
 
-## input to the function
-# we should only allow values that are integers
+# functions ----------------------------------------------------------
 
+
+#' Subset integers from data frame
+#'
+#' For computing the consensus, only integers should be included in the data frame.
+#'
+#' @param data a data frame or matrix.
+#'
+#' @return The same data frame as \code{data}, but the non-integers are dropped.
+#' @export
+#'
+#' @examples
+#' a <- sample(1:20, 10)
+#' b <- rnorm(10)
+#' c <- sample(-2:2, 10, replace = TRUE)
+#' integer_subset_df(data.frame(a, b, c))
+#' @seealso If you need to recode data into integers, see for example \code{\link[car]{recode}}.
 integer_subset_df <- function(data){
   stopifnot(is.data.frame(data) | is.matrix(data))
   # select numerics
@@ -54,11 +48,15 @@ integer_subset_df <- function(data){
   return(int_data)
 }
 
-
 # helper function rbind ----------------------------------------------
 
+#' rbind data frames from lists
+#'
+#' @param list A list where each entry is a data frame with the same columns
+#'
+#' @return A data frame.
+#' @export
 rbind_map <- function(list){
-
   for (i in seq_along(list)) {
     if ( i == 1) {
       df <- list[[i]]
@@ -76,20 +74,20 @@ rbind_map <- function(list){
   # - return correct message for correct data frame
 
 
-# frequency_analyses -------------------------------------------------
-
-# example
-# item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29), rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
-# in this item:
-# 87 times vlaid entries
-# 5 times NA
-# 3 times -2
-# 3 times -3
-
-
-# now this function needs to change all values in the item to 1 and 5 or NA and give an overview
-
-freq_overview <- function(item, range = NULL){
+#' Get frequencies from an item
+#'
+#' The return value contains two enries for each category used in the data. One that ends with \code{abs} shows the absolute frequencies, the other shows the relative frequencies, ending on \code{perc}. \code{min} before an entry means that this value was negative. Example: \code{C_min2_perc} with a value of 5 means that the -2 was present 5% on that item.
+#'
+#' @param item The item that will be analysed
+#'
+#' @return An overview for the frequencies of each entry in the item.
+#' @export
+#'
+#' @examples
+#' item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
+#'           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
+#' freq_overview(item)
+freq_overview <- function(item){
 
   entries_item <- length(item)
   original_missings <- sum(is.na(item))
@@ -113,19 +111,19 @@ freq_overview <- function(item, range = NULL){
   return
 }
 
-# freq_overview(item, range = c(1, 5))
 
-# freq_overview_df <- function(data, range = NULL) {
-#   data <- integer_subset_df(data) # das raus hier, hat hier nichts verloren
-#   ov_df <- purrr::map(data, ~ freq_overview(., range = range))
-#   rbind_map(ov_df)
-# }
-
-# freq_overview_df(prep_df, range = c(1, 5))
-
-
-# prep data ----------------------------------------------------------
-
+#' Prepare an item for consensus analysis
+#'
+#' @param item The item to be recoded
+#' @param range The range of the Likert-scale for that item. Must be a vector of at least two characters.
+#'
+#' @return The item itself, where all entries outside of \code{range} are recoded as \code{NA}.
+#' @export
+#'
+#' @examples
+#' item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
+#'           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
+#' prep_item(item, range = c(1, 5)
 prep_item <- function(item, range = NULL) {
   # function prepars item, is basically a recode such that only the complete values in range remain.
   if (is.null(range)) {
@@ -143,25 +141,40 @@ prep_item <- function(item, range = NULL) {
     return_item <- item
   }
   return_item
-
 }
 
+
+#' Prepare an dataframe for consensus analysis
+#'
+#' @param data The dataframe to be recoded.
+#' @param range The range of the Likert-scale for all items in that dataframe. Must be a vector of at least two characters.
+#'
+#' @return The dataframe itself, where all entries outside of \code{range} are recoded as \code{NA}.
+#' @export
+#'
+#'@seealso \code{\link[consr]{prep_item}} for running this function on one item.
 prep_item_df <- function(data, range = NULL){
   prep_df <- purrr::map(data, ~ prep_item(., range = range))
   prep_df <- as.data.frame(prep_df)
   prep_df
 }
 
-# prep_df <- prep_item_df(data)
 
 
 
-# compute frequencies ------------------------------------------------
-
-# data <- integer_subset(data)
-
-# compute frequencies:
-
+#' Get frequencies in an item and plot them
+#'
+#' @param item The item to be analysed. Must be a vector.
+#' @param range The range of valid values.
+#' @param plot logical, if a plot should be plotted. Defaultis to \code{FALSE}.
+#' @param ... Further arguments passed on to \code{\link[graphics]{barplot}}.
+#'
+#' @return Returns a frequency table of the entries in that item. Optionally, also a barplot of these items.
+#' @export
+#' @examples
+#' item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
+#'           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
+#' freq_item(item, range = c(1,5), plot = TRUE, col = "#00376c")
 freq_item <- function(item, range = NULL, plot = FALSE, ...){
   stopifnot(is.integer(abs(item)) | is.numeric(item))
 
@@ -182,13 +195,38 @@ freq_item <- function(item, range = NULL, plot = FALSE, ...){
   item_frequencies
 }
 
-# item_paper <- c(rep(1, 19), rep(2, 16), rep(3, 26), rep(4, 29), rep(5, 10))
-# freq_item(item_paper, plot = TRUE)
 
-# consensus ----------------------------------------------------------
-
-
+#' Consensus for an item
+#'
+#' Compute the consensus for an item, based on Tastle & Wiermann, (2006).
+#' @details
+#' \describe{
+#'  \item{n}{The number of valid answers on that item}
+#'  \item{min}{The minimum answer on that item}
+#'  \item{max}{The maximum answer on that item}
+#'  \item{consensus}{The consensus}
+#'  \item{dissensus}{The dissensus}
+#'  \item{n_missing}{The absolute number of missing values on that item, defined as \code{NA}}
+#'  \item{perc_missing}{The relative number of missing values on that item, defined as \code{NA}}
+#' }
+#'
+#' @param item The item that should be analyzed.
+#' @param range The range of the item indicating the valid values. Default is \code{NULL}.
+#' @param consensus.only Logical, if only the consensus should be reported. Default is to \code{FALSE}.
+#' @param round The number of digits to round the result to. Default is to 2.
+#'
+#' @return Returns an data frame with the consensus and additional information for each item. See details for further explanation.
+#' @export
+#'
+#' @examples
+#' item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
+#'           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
+#' consensus(item, range = c(1, 5), round = 4)
+#' ## or the original example from the article:
+#' item <- c(rep(1, 19), rep(2, 16), rep(3, 26), rep(4, 29), rep(5, 10))
+#' consensus(item, range = c(1, 5), round = 3)
 consensus <- function(item, range = NULL, consensus.only = FALSE, round = 2){
+  item <- prep_item(item, range = range)
   item_frequencies <- freq_item(item, range = range, plot = FALSE)
 
   if (is.null(range)) {
@@ -221,8 +259,6 @@ consensus <- function(item, range = NULL, consensus.only = FALSE, round = 2){
     return(return)
   }
 
-  # n, min, max, consensus, dissensus, n-missing, % missing
-  # categories
   item_missing <- sum(is.na(item))
   percent_missing <- item_missing/length(item)*100
 
@@ -237,13 +273,41 @@ consensus <- function(item, range = NULL, consensus.only = FALSE, round = 2){
 }
 
 
-# consensus(item_paper)
-
-
-# next
-# turn all these into a function that makes the table John requires.
-
-# i.e. function 'consensus_df'
+#' Consensus for data frame
+#'
+#' Compute the consensus for all items of a data frame, based on Tastle & Wiermann, (2006).
+#' @details
+#' \describe{
+#'  \item{n}{The number of valid answers on that item}
+#'  \item{min}{The minimum answer on that item}
+#'  \item{max}{The maximum answer on that item}
+#'  \item{consensus}{The consensus}
+#'  \item{dissensus}{The dissensus}
+#'  \item{n_missing}{The absolute number of missing values on that item, defined as \code{NA}}
+#'  \item{perc_missing}{The relative number of missing values on that item, defined as \code{NA}}
+#' }
+#'
+#' @param item The dataframe with the items, for which the conensus should be computed.
+#' @param range The range of the items indicating the valid values. Default is \code{NULL}.
+#' @param consensus.only Logical, if only the consensus should be reported. Default is to \code{FALSE}.
+#' @param round The number of digits to round the result to. Default is to 2.
+#' @param check.int Whether the function should check for integers. Default is to \code{TRUE}. Only integers are allowd. If \code{FALSE}, things can go horribly wrong.
+#'
+#' @return Returns an data frame with the consensus and additional information for each item. See details for further explanation.
+#' @export
+#'
+#' @examples
+#'n = 10 # (max = 26 for now)
+#'var_names <- paste0("var_", letters[1:10])
+#'entries <- matrix(sample(-2:2, n*10, replace = TRUE),
+#'                  nrow = n, ncol = 10)
+#'entries[sample(1:100, 15)] <- NA
+#'data <- as.data.frame(entries)
+#'colnames(data) <- var_names
+#'subj_id <- paste0("id_", sample(letters, n, replace = FALSE))
+#'data <- cbind(subj_id, data, stringsAsFactors = FALSE)
+#'data["var_j"] <- data["var_j"] / 2.3
+#'consensus_df(data, range = c(-2, 2), check.int = TRUE)
 
 consensus_df <- function(data, range = NULL, consensus.only = FALSE,
                          round = 2, check.int = TRUE){
