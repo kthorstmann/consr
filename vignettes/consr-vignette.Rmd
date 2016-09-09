@@ -10,9 +10,191 @@ vignette: >
 ---
 
 
-Abstract for the package.
+This package is based on an article by Tastle & Wiermann, (2006)[^1]. It implements their functions and returns results for items and dataframes alike.
+
+# Installing the package
+
+To install the package, run this code:
+
+```{r}
+
+# install.packages("devtools")
+# library(devtools)
+# devtools::install_github("kthorstmann/consr")
+library(consr)
+
+```
+
+
+# Example - a single item
+
+First, lets consider the example given by Tastle & Wiermann on p. 537, equation 2:
+
+
+```{r}
+
+item <- c(rep(1, 19), rep(2, 16), rep(3, 26), rep(4, 29), rep(5, 10))
+
+```
+
+
+With this package, you can create Figure 1, p. 537 simply with:
+
+```{r}
+
+freq_item(item, plot = TRUE)
+
+```
+
+In `freq_item`, additional arguments can be passed on to `barplot` using `...`. The function also returns a table with the distributions of values per category.
+
+Secondly, you can simply compute the consensus by running
+
+```{r}
+
+consensus(item=item, range = NULL)
+
+```
+
+The output contains the following values:
+
+- **n** The number of valid answers on that item
+- **min** The minimum answer on that item
+- **max** The maximum answer on that item
+- **consensus** The consensus
+- **dissensus** The dissensus
+- **n_missing** The absolute number of missing values on that item, defined as `NA`
+- **perc_missing** The relative number of missing values on that item, defined as `NA`
+
+Now, lets consider an item that is not as clean and has missings as well as values that are not part of the likert scale:
+
+```{r}
+item.dirty <- c(rep(1, 15), rep(2, 8), rep(3, 26), rep(4, 29), rep(5, 5), rep(NA, 5), rep(-2, 9), rep(-3, 4))
+```
+
+This item neads to be cleaned first, i. e. we should first get an overview of how many values are actually in each category:
+
+```{r}
+
+freq_overview(item.dirty, range = c(1, 5))
+
+```
+
+Using `freq_overview` will give us an overview over each answer on the item. Using the `range` argument will tell the function, what range the liker scale actually has and thereby, which of the values are valid.
+
+A vector is returned with each answer on the item as two categories. First, we see *C_min3_abs*, which means that *-3* (min, since - is not allowd in names of items), was 4 times present in the data frame. Under the entry *C_min3_perc*, we see that this constitues about 3.960396% of the entries in the item `item.dirty`.
+
+Actually, this gives just an overview and before computing the consensus, each item should be prepared and recoded in a proper way. To make recoding very easy, `consr` contains a function called `prep_item` that prepares an item for further processing. 
+
+
+```{r prep_item}
+
+prep_item(item.dirty, range = c(1, 5))
+
+```
+
+Using this function again with the `range` argument, all values that are not within the range are recoded to missings with the standard formula `NA`. This can be useful, for example, when online surveys return different values for different types of missings.
+
+# Example 2 - a data frame
+
+Usually, one wants to process complete dataframes. `consr` contains functions to do this, usually indicated with an `_df` at the end.
+
+Let us take a look at a normal data frame one might receive from a survey:
+
+```{r dataframe}
+
+n = 10 # (max = 26 for now)
+var_names <- paste0("var_", letters[1:10])
+entries <- matrix(sample(-2:2, n*10, replace = TRUE),
+                  nrow = n, ncol = 10)
+entries[sample(1:100, 15)] <- NA # throw in some NA
+entries[sample(1:100, 10)] <- -77 # throw in some NA
+data <- as.data.frame(entries)
+colnames(data) <- var_names
+subj_id <- paste0("id_", sample(letters, n, replace = FALSE)) # get char subj ids
+data <- cbind(subj_id, data, stringsAsFactors = FALSE)
+data["var_j"] <- data["var_j"] / 2.3 # get one non-numeric
+
+```
+
+This data frame contains multiple variables, some of them not being answers to likert-type scales (`var_j`, `subj_id`). The data frame contains also entries such as *-77*, which are a missing, but have not been recoded yet.
+
+
+First, let us exclude the variables that are not likert type scales, using the function `integer_subset_df`:
+
+```{r integer_subset_df}
+
+data_int <- integer_subset_df(data)
+data_int
+```
+
+This returns an data set with only integers. A warning message tells you which variables were considered as such.
+
+You can then move on to prepare the data frame for consensus analyses, using `prep_item_df`:
+
+```{r prep_item_df}
+
+data_pre <- prep_item_df(data_int, range = c(-2, 2))
+data_pre
+
+```
+
+Using this data set, you can run the consensus analyses. Note that there is no `freq_overview` version for a data frame. This is due to different length of arguments that are returned by this function, depending on the item. You can use something like `purrr::map(data, freq_overview)` to get an overview for the whole data frame.
+
+
+```{r conensus_df}
+
+consensus_df(data_pre)
+
+```
+
+
+Note that you can also do this in one single step:
+
+
+```{r consensus_df for messy data}
+
+consensus_df(data, range = c(-2, 2))
+
+```
+
+# The `range` argument
+
+The range argument is nearly part of all functions, since it indicates which are the valid vlaues in any given item. The range is entered as a vector and has only two arguments (though, if you pass on more than that, the `min` and `max` values will be taken).
+
+If you every have trouble using this argument, recode your data properly before computing the consensus and set `range = NULL`, which is the default. It will then be guessed from your data frame for each item.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Also a quote using `>`:
 
 > "He who gives up [code] safety for [code] speed deserves neither."
 ([via](https://twitter.com/hadleywickham/status/504368538874703872))
+
+
+[^1]: Tastle, W. J., & Wierman, M. J. (2007). Consensus and dissention: A measure of ordinal dispersion. *International Journal of Approximate Reasoning*, *45(3)*, 531–545. http://doi.org/10.1016/j.ijar.2006.06.024.

@@ -41,7 +41,8 @@ integer_subset_df <- function(data){
   num_only <- purrr::map(data, ~ is.numeric(.))
   num_data <- data[unlist(num_only)]
   # select integers
-  int_only <- purrr::map(num_data, ~ is.integer(abs(.)))
+  int_only_i <- purrr::map(num_data, ~ .%%1==0)
+  int_only <- purrr::map(int_only_i, ~ !any(!., na.rm = TRUE))
   int_data <- num_data[unlist(int_only)]
   int_variables <- names(int_data)
   if (length(int_variables) == 0) {
@@ -187,7 +188,7 @@ freq_item <- function(item, range = NULL, plot = FALSE, ...){
 # consensus ----------------------------------------------------------
 
 
-consensus <- function(item, range = NULL, consensus.only = FALSE, round = round){
+consensus <- function(item, range = NULL, consensus.only = FALSE, round = 2){
   item_frequencies <- freq_item(item, range = range, plot = FALSE)
 
   if (is.null(range)) {
@@ -244,8 +245,13 @@ consensus <- function(item, range = NULL, consensus.only = FALSE, round = round)
 
 # i.e. function 'consensus_df'
 
-consensus_df <- function(data, range = NULL, consensus.only = FALSE, round = 2){
-  data_int <- integer_subset_df(data)
+consensus_df <- function(data, range = NULL, consensus.only = FALSE,
+                         round = 2, check.int = TRUE){
+  if (check.int) {
+    data_int <- integer_subset_df(data)
+  } else {
+    data_int <- data
+  }
   prep_df <- prep_item_df(data_int, range = range)
   cons_list <- purrr::map(prep_df, ~ consensus(., range,
                           consensus.only = consensus.only, round = round))
