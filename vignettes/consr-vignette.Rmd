@@ -76,11 +76,11 @@ This item neads to be cleaned first, i. e. we should first get an overview of ho
 
 ```{r}
 
-freq_overview(item.dirty)
+freq_overview(item.dirty, return.df = TRUE)
 
 ```
 
-Using `freq_overview` will give us an overview over each answer on the item. Using the `range` argument will tell the function, what range the liker scale actually has and thereby, which of the values are valid.
+Using `freq_overview` will give us an overview over each answer on the item. Using the `range` argument will tell the function, what range the liker scale actually has and thereby, which of the values are valid. With the argument `return.df` set to `TRUE`, the function will return a data.frame.
 
 A vector is returned with each answer on the item as two categories. First, we see *C_min3_abs*, which means that *-3* (min, since - is not allowd in names of items), was 4 times present in the data frame. Under the entry *C_min3_perc*, we see that this constitues about 3.960396% of the entries in the item `item.dirty`.
 
@@ -113,7 +113,7 @@ data <- as.data.frame(entries)
 colnames(data) <- var_names
 subj_id <- paste0("id_", sample(letters, n, replace = FALSE)) # get char subj ids
 data <- cbind(subj_id, data, stringsAsFactors = FALSE)
-data["var_j"] <- data["var_j"] / 2.3 # get one non-numeric
+data["var_j"] <- data["var_j"] / 2.3 # get one non-integer
 
 ```
 

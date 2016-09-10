@@ -4,10 +4,12 @@
 \alias{freq_overview}
 \title{Get frequencies from an item}
 \usage{
-freq_overview(item)
+freq_overview(item, return.df = FALSE)
 }
 \arguments{
 \item{item}{The item that will be analysed}
+
+\item{return.df}{Logical, should a data frame with the overview be returned? Default is fot \code{FALSE}.}
 }
 \value{
 An overview for the frequencies of each entry in the item.
@@ -18,6 +20,6 @@ The return value contains two enries for each category used in the data. One tha
 \examples{
 item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
-freq_overview(item)
+freq_overview(item, return.df = TRUE)
 }
 

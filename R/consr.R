@@ -60,6 +60,7 @@ rbind_map <- function(list){
 #' The return value contains two enries for each category used in the data. One that ends with \code{abs} shows the absolute frequencies, the other shows the relative frequencies, ending on \code{perc}. \code{min} before an entry means that this value was negative. Example: \code{C_min2_perc} with a value of 5 means that the -2 was present 5% on that item.
 #'
 #' @param item The item that will be analysed
+#' @param return.df Logical, should a data frame with the overview be returned? Default is fot \code{FALSE}.
 #'
 #' @return An overview for the frequencies of each entry in the item.
 #' @export
@@ -67,8 +68,8 @@ rbind_map <- function(list){
 #' @examples
 #' item <- c(rep(1, 19), rep(2, 8), rep(3, 26), rep(4, 29),
 #'           rep(5, 5), rep(NA, 5), rep(-2, 4), rep(-3, 4))
-#' freq_overview(item)
-freq_overview <- function(item){
+#' freq_overview(item, return.df = TRUE)
+freq_overview <- function(item, return.df = FALSE){
 
   entries_item <- length(item)
   original_missings <- sum(is.na(item))
@@ -80,15 +81,24 @@ freq_overview <- function(item){
 
   freq_item_abs <- table(item)
   freq_item_perc <- freq_item_abs/entries_item*100
-
   cat_names <- names(freq_item_abs)
-  freq_item_abs_names <- stringr::str_c("C_", cat_names, "_abs")
-  freq_item_perc_names <- stringr::str_c("C_", cat_names, "_perc")
-  return_names <- stringr::str_replace_all(c(freq_item_abs_names,
-                                             freq_item_perc_names) , "-", "min")
-  return <- t(data.frame(c(freq_item_abs, freq_item_perc)))
-  colnames(return) <- return_names
-  rownames(return) <- NULL
+
+  if (return.df) {
+    item_name <- as.numeric(cat_names)
+    return <- cbind(item.name, freq_item_abs, freq_item_perc)
+    row.names(return) <- NULL
+    row.names(return)
+    return(return)
+  } else {
+    freq_item_abs_names <- stringr::str_c("C_", cat_names, "_abs")
+    freq_item_perc_names <- stringr::str_c("C_", cat_names, "_perc")
+    return_names <- stringr::str_replace_all(c(freq_item_abs_names,
+                                               freq_item_perc_names) , "-", "min")
+    return <- t(data.frame(c(freq_item_abs, freq_item_perc)))
+    colnames(return) <- return_names
+    rownames(return) <- NULL
+    return(return)
+  }
   return
 }
 
