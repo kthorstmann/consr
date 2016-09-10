@@ -108,10 +108,10 @@ var_names <- paste0("var_", letters[1:10])
 entries <- matrix(sample(-2:2, n*10, replace = TRUE),
                   nrow = n, ncol = 10)
 entries[sample(1:100, 15)] <- NA # throw in some NA
-entries[sample(1:100, 10)] <- -77 # throw in some NA
+entries[sample(1:100, 10)] <- -77 # throw in some missings, coded as -77
 data <- as.data.frame(entries)
 colnames(data) <- var_names
-subj_id <- paste0("id_", sample(letters, n, replace = FALSE)) # get char subj ids
+subj_id <- paste0("id_", sample(letters, n, replace = FALSE)) # get character subj ids
 data <- cbind(subj_id, data, stringsAsFactors = FALSE)
 data["var_j"] <- data["var_j"] / 2.3 # get one non-integer
 

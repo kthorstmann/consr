@@ -85,7 +85,7 @@ freq_overview <- function(item, return.df = FALSE){
 
   if (return.df) {
     item_name <- as.numeric(cat_names)
-    return <- cbind(item.name, freq_item_abs, freq_item_perc)
+    return <- cbind(item_name, freq_item_abs, freq_item_perc)
     row.names(return) <- NULL
     row.names(return)
     return(return)
